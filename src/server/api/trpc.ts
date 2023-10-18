@@ -113,25 +113,25 @@ export const publicProcedure = t.procedure
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  // if (ctx.req.headers.authorization) {
-  //   const token = ctx.req.headers.authorization.split(' ')[1]
-  //   if (token) {
-  //     try {
-  //       const jwtSecret = env.JWT_SECRET
-  //       const decoded = jwt.verify(token, jwtSecret)
-  //       if (decoded) {
-  //         return next({
-  //           ctx: {
-  //             // infers the `session` as non-nullable
-  //             session: { ...ctx.session, user: decoded }
-  //           }
-  //         })
-  //       }
-  //     } catch (error) {
-  //       throw new TRPCError({ code: 'UNAUTHORIZED' })
-  //     }
-  //   }
-  // }
+  if (ctx.req.headers.authorization) {
+    const token = ctx.req.headers.authorization.split(' ')[1]
+    if (token) {
+      try {
+        const jwtSecret = env.JWT_SECRET
+        const decoded = jwt.verify(token, jwtSecret)
+        if (decoded) {
+          return next({
+            ctx: {
+              // infers the `session` as non-nullable
+              session: { ...ctx.session, user: decoded }
+            }
+          })
+        }
+      } catch (error) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+    }
+  }
   if (!ctx.session?.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }

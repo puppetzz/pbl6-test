@@ -15,3 +15,22 @@ export const comparePassword = async ({
   const isMatch = await b.compare(password, passwordHash)
   return isMatch
 }
+
+export const pagingDataReturn = <T>({
+  items,
+  page,
+  total
+}: {
+  items: T
+  page: number
+  total: number
+}) => {
+  const totalPage = Math.ceil(total / 10)
+  return {
+    items,
+    page,
+    total,
+    totalPage,
+    hasMore: page < totalPage
+  }
+}

@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
 export const userRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.mutation(async ({ ctx }) => {
     try {
       const userList = await ctx.db.user.findMany()
       return userList

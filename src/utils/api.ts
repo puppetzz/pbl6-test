@@ -48,7 +48,7 @@ export const api = createTRPCNext<AppRouter>({
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           headers() {
-            return { Authorization: accessToken ? `Bearer ${accessToken}` : '' }
+            return { authorization: accessToken ? `Bearer ${accessToken}` : '' }
           }
         })
       ]

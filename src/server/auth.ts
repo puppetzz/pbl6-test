@@ -8,9 +8,12 @@ import {
 import DiscordProvider from 'next-auth/providers/discord'
 import GithubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
+import CredentialsProvider from 'next-auth/providers/google'
+import { type User as UserModel } from '@prisma/client'
 
 import { env } from '@/env.mjs'
 import { db } from '@/server/db'
+import { credentialsProviderOptions } from '@/utils/credentialAuth'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,7 +27,7 @@ declare module 'next-auth' {
       id: string
       // ...other properties
       // role: UserRole;
-    }
+    } & UserModel
   }
 
   // interface User {
@@ -43,10 +46,20 @@ export const authOptions: NextAuthOptions = {
     session: ({ session, user }) => ({
       ...session,
       user: {
+        ...user,
         ...session.user,
         id: user.id
       }
-    })
+    }),
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id
+      }
+      return {
+        ...token,
+        user
+      }
+    }
   },
   adapter: PrismaAdapter(db),
   providers: [

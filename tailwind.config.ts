@@ -10,10 +10,7 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px'
-      }
+      padding: '2rem'
     },
     extend: {
       colors: {
@@ -38,6 +35,10 @@ module.exports = {
           DEFAULT: 'hsl(var(--success))',
           foreground: 'hsl(var(--success-foreground))'
         },
+        pending: {
+          DEFAULT: 'hsl(var(--pending))',
+          foreground: 'hsl(var(--pending-foreground))'
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))'
@@ -53,6 +54,18 @@ module.exports = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
+        },
+        beginner: {
+          DEFAULT: 'hsl(var(--beginner))',
+          foreground: 'hsl(var(--beginner-foreground))'
+        },
+        intermediate: {
+          DEFAULT: 'hsl(var(--intermediate))',
+          foreground: 'hsl(var(--intermediate-foreground))'
+        },
+        advanced: {
+          DEFAULT: 'hsl(var(--advanced))',
+          foreground: 'hsl(var(--advanced-foreground))'
         }
       },
       borderRadius: {

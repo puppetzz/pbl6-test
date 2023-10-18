@@ -1,4 +1,4 @@
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Wrench } from 'lucide-react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import type * as z from 'zod'
@@ -40,6 +40,7 @@ import {
 import { Input } from '../ui/input'
 import { useToast } from '../ui/use-toast'
 import { signInformSchema, signUpformSchema } from './schemas'
+import Link from 'next/link'
 
 interface UserBoxProps {
   className?: string
@@ -68,21 +69,21 @@ export const UserBox = ({ className = '' }: UserBoxProps) => {
       })
     }
   })
-  const loginUserMutation = api.auth.manualSignIn.useMutation({
-    onSuccess: (data) => {
-      toast({
-        title: data || 'Login successfully',
-        variant: 'success'
-      })
-      window.location.reload()
-    },
-    onError: (error) => {
-      toast({
-        title: error?.message || 'Login failed',
-        variant: 'destructive'
-      })
-    }
-  })
+  // const loginUserMutation = api.auth.manualSignIn.useMutation({
+  //   onSuccess: (data) => {
+  //     toast({
+  //       title: data || 'Login successfully',
+  //       variant: 'success'
+  //     })
+  //     window.location.reload()
+  //   },
+  //   onError: (error) => {
+  //     toast({
+  //       title: error?.message || 'Login failed',
+  //       variant: 'destructive'
+  //     })
+  //   }
+  // })
 
   const signInForm = useForm<z.infer<typeof signInformSchema>>({
     resolver: zodResolver(signInformSchema),
@@ -102,11 +103,16 @@ export const UserBox = ({ className = '' }: UserBoxProps) => {
     }
   })
 
-  const onSignInFormSubmit = (data: z.infer<typeof signInformSchema>) => {
-    loginUserMutation.mutate({
-      username: data.username,
-      password: data.password
-    })
+  const onSignInFormSubmit = async (data: z.infer<typeof signInformSchema>) => {
+    // loginUserMutation.mutate({
+    //   username: data.username,
+    //   password: data.password
+    // })
+    try {
+      await signIn()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const onSignUpFormSubmit = (data: z.infer<typeof signUpformSchema>) => {
@@ -140,6 +146,20 @@ export const UserBox = ({ className = '' }: UserBoxProps) => {
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            {userSession.user.isAdmin && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link href={'/admin'} className="w-full">
+                      <Wrench className="mr-2 h-4 w-4" />
+                      <span>Management</span>
+                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"

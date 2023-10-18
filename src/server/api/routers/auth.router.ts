@@ -5,7 +5,7 @@ import { setToken } from '@/utils/api'
 import { createId } from '@paralleldrive/cuid2'
 import * as jwt from 'jsonwebtoken'
 
-import { string, z } from 'zod'
+import { z } from 'zod'
 
 export const authRouter = createTRPCRouter({
   manualSignUp: publicProcedure
@@ -73,7 +73,7 @@ export const authRouter = createTRPCRouter({
         password: z.string()
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         const user = await ctx.db.user.findFirst({
           where: {
@@ -107,16 +107,10 @@ export const authRouter = createTRPCRouter({
         const accessToken = jwt.sign(user, jwtSecret)
         setToken(String(accessToken))
 
-        await ctx.db.session.create({
-          data: {
-            id: createId(),
-            userId: user.id,
-            sessionToken: accessToken,
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
-          }
-        })
-
-        return 'You have successfully signed in!'
+        return {
+          ...user,
+          accessToken
+        }
       } catch (error) {}
     })
 })
