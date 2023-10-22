@@ -29,6 +29,28 @@ export const adminRouter = createTRPCRouter({
         throw new Error((error as Error)?.message)
       }
     }),
+  publishCourse: protectedProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+        status: z.boolean()
+      })
+    )
+    .mutation(async ({ ctx, input: { courseId, status } }) => {
+      try {
+        await ctx.db.course.update({
+          where: {
+            id: courseId
+          },
+          data: {
+            isPublished: status
+          }
+        })
+        return status
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
+    }),
   getPagingCourses: protectedProcedure
     .input(z.object({ page: z.number() }))
     .mutation(async ({ ctx, input }) => {

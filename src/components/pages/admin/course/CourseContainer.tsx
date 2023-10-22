@@ -19,7 +19,6 @@ const CourseContainer = ({
     !courses.length &&
     (loadingStatus === 'idle' || loadingStatus === 'loading')
   ) {
-    console.log(loadingStatus)
     return <div className="text-center">loading...</div>
   }
 

@@ -34,3 +34,13 @@ export const pagingDataReturn = <T>({
     hasMore: page < totalPage
   }
 }
+
+export const getLocalItem = (key: string) => {
+  const value = JSON.parse(window.localStorage.getItem(key) || 'null')
+  return value
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const setLocalItem = (key: string, value: any) => {
+  window.localStorage.setItem(key, JSON.stringify(value))
+}

@@ -9,9 +9,16 @@ import TopBar from '@/components/TopBar'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { Toaster } from '@/components/ui/toaster'
 import 'regenerator-runtime/runtime'
-import { Suspense, type ReactElement, type ReactNode } from 'react'
+import {
+  Suspense,
+  type ReactElement,
+  type ReactNode,
+  useState,
+  useEffect
+} from 'react'
 import { type NextPage } from 'next/types'
 import { Raleway } from 'next/font/google'
+import { useTheme } from 'next-themes'
 
 const raleway = Raleway({ subsets: ['latin'] })
 
@@ -28,10 +35,17 @@ const MyApp = ({
   pageProps: { session, ...pageProps }
 }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => page)
+  const { setTheme } = useTheme()
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setTheme(localStorage.getItem('theme') || 'light')
+    }
+  }, [])
+
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
     >

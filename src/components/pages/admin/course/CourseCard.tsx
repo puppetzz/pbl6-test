@@ -1,8 +1,10 @@
+import { Loading } from '@/components/common/Loading'
 import StatusAlert from '@/components/common/StatusAlert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import { type TPagingCourse } from '@/types/client.type'
+import { api } from '@/utils/api'
 import { getLevelLabel } from '@/utils/renderLabel.util'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -14,6 +16,18 @@ type CourseCardProps = {
 
 export const CourseCard = ({ course, className }: CourseCardProps) => {
   const level = getLevelLabel(course.level)
+  const {
+    data: isPublished = course.isPublished,
+    mutate,
+    isLoading
+  } = api.admin.publishCourse.useMutation()
+
+  const handleStatusUpdate = () => {
+    mutate({
+      courseId: course.id,
+      status: !isPublished
+    })
+  }
 
   return (
     <div className="flex overflow-hidden rounded-lg bg-neutral-50 shadow-md">
@@ -61,16 +75,32 @@ export const CourseCard = ({ course, className }: CourseCardProps) => {
           </div>
         </div>
         <div className="flex justify-between">
-          <StatusAlert
-            status={course.isPublished ? 'published' : 'draft'}
-            className="w-fit"
-          />
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <StatusAlert
+              status={isPublished ? 'published' : 'draft'}
+              className="w-fit"
+            />
+          )}
           <div className="grid grid-cols-2 gap-1">
             <Button className="rounded-full">Edit course</Button>
-            {course.isPublished ? (
-              <Button className="rounded-full">Draft back</Button>
+            {isPublished ? (
+              <Button
+                className="rounded-full"
+                onClick={handleStatusUpdate}
+                disabled={isLoading}
+              >
+                Conceal
+              </Button>
             ) : (
-              <Button className="rounded-full">Publish</Button>
+              <Button
+                className="rounded-full"
+                onClick={handleStatusUpdate}
+                disabled={isLoading}
+              >
+                Publish
+              </Button>
             )}
           </div>
         </div>
