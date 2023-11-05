@@ -3,7 +3,7 @@ import StatusAlert from '@/components/common/StatusAlert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
-import { type TPagingCourse } from '@/types/client.type'
+import { type TPagingCourse } from '@/types'
 import { api } from '@/utils/api'
 import { getLevelLabel } from '@/utils/renderLabel.util'
 import { ChevronRight } from 'lucide-react'
@@ -30,7 +30,12 @@ export const CourseCard = ({ course, className }: CourseCardProps) => {
   }
 
   return (
-    <div className="flex overflow-hidden rounded-lg bg-neutral-50 shadow-md">
+    <div
+      className={cn(
+        'flex overflow-hidden rounded-lg bg-neutral-50 shadow-md',
+        className
+      )}
+    >
       <div
         className={cn('flex basis-1/4 flex-col gap-2.5 p-5', {
           'bg-beginner': level === 'Beginner',

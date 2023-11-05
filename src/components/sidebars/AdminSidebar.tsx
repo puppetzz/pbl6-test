@@ -15,8 +15,8 @@ const menuItems = [
     icon: <BookMarked className="h-5 w-5" />
   },
   {
-    name: 'Products',
-    path: '/admin/products',
+    name: 'Questions',
+    path: '/admin/question',
     icon: <BookMarked className="h-5 w-5" />
   },
   {

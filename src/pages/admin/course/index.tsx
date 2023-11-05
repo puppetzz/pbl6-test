@@ -13,13 +13,14 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-import { Header } from '@/components/pages/admin/course/Header'
+import { PageHeader as CoursePageHeader } from '@/components/pages/admin/common/PageHeader'
 import { api } from '@/utils/api'
 import { Waypoint } from 'react-waypoint'
 import { type PaginatedResponse } from '@/types/responseType.type'
 import { type Question, type Course as TCourse } from '@prisma/client'
 import CourseContainer from '@/components/pages/admin/course/CourseContainer'
 import { type TPagingCourse } from '@/types/client.type'
+import CreateCourseForm from '@/components/pages/admin/course/CreateCourseForm'
 
 const Course = () => {
   const [page, setPage] = useState(1)
@@ -49,7 +50,14 @@ const Course = () => {
 
   return (
     <div className="mx-4">
-      <Header className="mb-2" />
+      <CoursePageHeader
+        className="mb-2"
+        pageName="Course"
+        description="
+        Build courses and publish to users
+      "
+      />
+      <CreateCourseForm className="mb-2" />
       <CourseContainer courses={courses?.items || []} loadingStatus={status} />
       <Waypoint onEnter={handleOnEnter} />
       <Form {...courseForm}>

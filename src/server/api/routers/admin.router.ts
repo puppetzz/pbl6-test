@@ -88,5 +88,85 @@ export const adminRouter = createTRPCRouter({
       } catch (error) {
         throw new Error((error as Error)?.message)
       }
+    }),
+  createQuestion: protectedProcedure
+    .input(
+      z.object({
+        level: z.number(),
+        content: z.string(),
+        audioURL: z.string().optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const question = await ctx.db.question.create({
+          data: { ...input, score: 0, isTemplate: true }
+        })
+        return question
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
+    }),
+  updateQuestion: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        level: z.number(),
+        content: z.string(),
+        audioURL: z.string()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const question = await ctx.db.question.update({
+          where: { id: input.id },
+          data: { ...input }
+        })
+        return question
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
+    }),
+  deleteQuestion: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const question = await ctx.db.question.delete({
+          where: { id: input.id }
+        })
+        return question
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
+    }),
+  getQuestions: protectedProcedure
+    .input(
+      z
+        .object({
+          courseId: z.string().optional(),
+          filter: z.string().optional()
+        })
+        .optional()
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const questions = await ctx.db.question.findMany({
+          where: {
+            OR: [
+              {
+                courseId: input?.courseId || ''
+              },
+              {
+                content: {
+                  contains: input?.filter || ''
+                }
+              }
+            ]
+          }
+        })
+        return questions
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
     })
 })

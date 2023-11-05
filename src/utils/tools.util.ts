@@ -44,3 +44,32 @@ export const getLocalItem = (key: string) => {
 export const setLocalItem = (key: string, value: any) => {
   window.localStorage.setItem(key, JSON.stringify(value))
 }
+
+export const levelTransformer = (
+  level: number | string,
+  direction: 'toString' | 'toNumber'
+) => {
+  if (direction === 'toString') {
+    switch (level) {
+      case 1:
+        return 'Beginner'
+      case 2:
+        return 'Intermediate'
+      case 3:
+        return 'Advanced'
+      default:
+        return 'Beginner'
+    }
+  } else {
+    switch (level) {
+      case 'Beginner':
+        return 1
+      case 'Intermediate':
+        return 2
+      case 'Advanced':
+        return 3
+      default:
+        return 1
+    }
+  }
+}
