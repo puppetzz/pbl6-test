@@ -1,26 +1,11 @@
 import AdminLayout from '@/components/layouts/AdminLayout'
-import { useState, type ReactElement } from 'react'
-import { DndContext } from '@dnd-kit/core'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { type z } from 'zod'
-import { createCourseSchema } from '../../../schemas'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { PageHeader as CoursePageHeader } from '@/components/pages/admin/common/PageHeader'
-import { api } from '@/utils/api'
-import { Waypoint } from 'react-waypoint'
-import { type PaginatedResponse } from '@/types/responseType.type'
-import { type Question, type Course as TCourse } from '@prisma/client'
 import CourseContainer from '@/components/pages/admin/course/CourseContainer'
-import { type TPagingCourse } from '@/types/client.type'
 import CreateCourseForm from '@/components/pages/admin/course/CreateCourseForm'
+import { type TPagingCourse } from '@/types/client.type'
+import { api } from '@/utils/api'
+import { useState, type ReactElement } from 'react'
+import { Waypoint } from 'react-waypoint'
 
 const Course = () => {
   const [page, setPage] = useState(1)
@@ -43,11 +28,6 @@ const Course = () => {
     }
   }
 
-  const courseForm = useForm<z.infer<typeof createCourseSchema>>({
-    resolver: zodResolver(createCourseSchema),
-    defaultValues: {}
-  })
-
   return (
     <div className="mx-4">
       <CoursePageHeader
@@ -57,12 +37,17 @@ const Course = () => {
         Build courses and publish to users
       "
       />
-      <CreateCourseForm className="mb-2" />
+      <CreateCourseForm
+        className="mb-2"
+        refetch={() => {
+          setCourses(undefined)
+          mutate({
+            page: 1
+          })
+        }}
+      />
       <CourseContainer courses={courses?.items || []} loadingStatus={status} />
       <Waypoint onEnter={handleOnEnter} />
-      <Form {...courseForm}>
-        <form></form>
-      </Form>
     </div>
   )
 }

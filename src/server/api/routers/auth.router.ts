@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs'
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc'
-import { comparePassword, hashedPassword } from '@/utils'
+import { comparePassword, hashedPassword } from '@/utils/password.util'
 import { setToken } from '@/utils/api'
 import { createId } from '@paralleldrive/cuid2'
 import * as jwt from 'jsonwebtoken'

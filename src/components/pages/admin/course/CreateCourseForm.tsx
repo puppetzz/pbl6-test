@@ -1,3 +1,10 @@
+import { SortableList } from '@/components/dnd-kit/SortableList'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -5,8 +12,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
+  FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -14,30 +23,95 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { type Questions, type TCreateCourseInput } from '@/types'
+import { levelTransformerToNumber } from '@/utils'
+import { api } from '@/utils/api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
+import { ChevronsRight, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 type CreateCourseFormProps = {
   className?: string
+  refetch?: () => void
 }
 
 const formSchema = z.object({
-  title: z.string().nonempty('Title is required')
+  name: z.string(),
+  description: z.string(),
+  level: z.string().nonempty('Level is required'),
+  type: z.string()
 })
 
-const CreateCourseForm = ({ className }: CreateCourseFormProps) => {
+const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
 
-  const handleOnSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data)
+  const {
+    data,
+    mutate: getQuestions,
+    status
+  } = api.admin.getQuestions.useMutation()
+  const { mutate: createCourse } = api.admin.createCourse.useMutation({
+    onSuccess: () => {
+      setIsOpen(false)
+      setColumns([])
+      refetch?.()
+      form.reset()
+    }
+  })
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [columns, setColumns] = useState<Questions>([])
+
+  const handleOnSubmit = (values: z.infer<typeof formSchema>) => {
+    const newCourse: TCreateCourseInput = {
+      ...values,
+      level: levelTransformerToNumber(values.level),
+      questionIds: columns.map((item) => item.id)
+    }
+    createCourse(newCourse)
+  }
+
+  const renderQuestions = () => {
+    if (status === 'loading') {
+      return <div>Loading...</div>
+    }
+
+    if (status === 'error' || status === 'idle') {
+      return <div>No results</div>
+    }
+
+    if (status === 'success') {
+      return !!data.length ? (
+        data?.map((question) => (
+          <div
+            key={question.id}
+            className="group flex cursor-pointer justify-between p-2 transition-all hover:bg-neutral-50"
+            onClick={() => {
+              setColumns((prev) => {
+                if (prev.find((item) => item.id === question.id)) {
+                  return prev
+                }
+                return [...prev, question]
+              })
+            }}
+          >
+            <span>{question.content}</span>
+            <ChevronsRight className="animate-bounce-to-right opacity-0 transition-all group-hover:opacity-100" />
+          </div>
+        ))
+      ) : (
+        <div>No results</div>
+      )
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className={className} asChild>
         <Button
           className="mt-2 flex w-fit cursor-pointer items-center rounded-md border-2 border-accent-foreground p-2 transition-all hover:border-success hover:bg-transparent hover:text-success"
@@ -47,21 +121,87 @@ const CreateCourseForm = ({ className }: CreateCourseFormProps) => {
           <span>Add course</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-[70rem] max-h-[90vh] max-w-[90vw]">
-        <div className="flex">
-          <div className="flex h-full w-[20rem] flex-col">
+      <DialogContent className="h-[70rem] max-h-[90vh] max-w-[70vw]">
+        <div className="flex h-full gap-4">
+          <div className="flex h-full basis-2/5 flex-col overflow-hidden">
             <span className="w-full text-center text-2xl font-bold">
               Properties
             </span>
             <Form {...form}>
-              <form onSubmit={void form.handleSubmit(handleOnSubmit)}>
+              <form
+                className="flex grow flex-col"
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                onSubmit={form.handleSubmit(handleOnSubmit)}
+              >
                 <FormField
-                  name="courseLevel"
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Course name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Course name" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="type"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Course type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="outline-none">
+                            <SelectValue placeholder="Please select course type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Pronunciation">
+                            Pronunciation
+                          </SelectItem>
+                          <SelectItem value="Grammar">Grammar</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="description"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Question content</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Course description"
+                          className="max-h-[10rem]"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="level"
+                  control={form.control}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Course level</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          setColumns([])
+                          getQuestions({
+                            filter: {
+                              level: levelTransformerToNumber(value)
+                            }
+                          })
+                        }}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -77,11 +217,42 @@ const CreateCourseForm = ({ className }: CreateCourseFormProps) => {
                           <SelectItem value="Advanced">Advanced</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger className="hover:no-underline">
+                      Pick questions
+                    </AccordionTrigger>
+                    <AccordionContent className="max-h-[20rem] overflow-auto shadow-lg">
+                      {renderQuestions()}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                <Button type="submit" className="mt-auto">
+                  Submit
+                </Button>
               </form>
             </Form>
+          </div>
+          <span className="divider-vertical" />
+          <div className="basis-3/5">
+            <SortableList
+              items={columns}
+              onChange={setColumns}
+              renderItem={(item) => (
+                <SortableList.Item
+                  key={item.id}
+                  id={item.id}
+                  className="items-center"
+                >
+                  <div>{item.content}</div>
+                  <SortableList.DragHandle className="ml-auto bg-transparent hover:bg-transparent" />
+                </SortableList.Item>
+              )}
+            />
           </div>
         </div>
       </DialogContent>

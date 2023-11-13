@@ -110,4 +110,12 @@
   .full-height-minus-top-bar {
     height: calc(100vh - var(--top-bar-height));
   }
+
+  .divider-vertical {
+    @apply h-full w-px bg-black;
+  }
+
+  .divider-horizontal {
+    @apply h-px w-full bg-black;
+  }
 }

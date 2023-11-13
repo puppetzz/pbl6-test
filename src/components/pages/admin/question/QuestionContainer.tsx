@@ -1,6 +1,7 @@
 import { type Questions } from '@/types'
 import { Inbox } from 'lucide-react'
 import QuestionCard from './QuestionCard'
+import { cn } from '@/lib/utils'
 
 type CourseContainerProps = {
   className?: string
@@ -30,7 +31,7 @@ const QuestionContainer = ({
   }
 
   return (
-    <div className="grid gap-2 lg:grid-cols-2">
+    <div className={cn('grid gap-2 lg:grid-cols-2', className)}>
       {questions?.map((question) => (
         <QuestionCard key={question.id} question={question} />
       ))}

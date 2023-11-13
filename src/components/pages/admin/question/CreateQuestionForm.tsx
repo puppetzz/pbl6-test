@@ -46,6 +46,8 @@ const CreateQuestionForm = ({
           level: '0',
           content: ''
         })
+        setIsDialogOpen(false)
+        refetch?.()
       }
     }
   })
@@ -66,8 +68,6 @@ const CreateQuestionForm = ({
       content: data.content,
       audioURL: data.audioURL
     })
-    setIsDialogOpen(false)
-    refetch?.()
   }
 
   return (

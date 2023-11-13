@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { pagingDataReturn } from '@/utils'
+import { createId } from '@paralleldrive/cuid2'
 
 import { z } from 'zod'
 
@@ -10,20 +11,37 @@ export const adminRouter = createTRPCRouter({
         name: z.string().min(2),
         description: z.string(),
         level: z.number(),
-        type: z.string()
+        type: z.string(),
+        questionIds: z.array(z.string())
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, description, level, type } = input
+      const { questionIds, ...rest } = input
       try {
         const course = await ctx.db.course.create({
           data: {
-            name,
-            description,
-            level,
-            type
+            ...rest,
+            isTemplate: true
           }
         })
+
+        const questions = await ctx.db.question.findMany({
+          where: {
+            id: {
+              in: questionIds
+            }
+          }
+        })
+
+        await ctx.db.question.createMany({
+          data: questions.map((question) => ({
+            ...question,
+            id: createId(),
+            courseId: course.id,
+            isTemplate: false
+          }))
+        })
+
         return course
       } catch (error) {
         throw new Error((error as Error)?.message)
@@ -144,7 +162,12 @@ export const adminRouter = createTRPCRouter({
       z
         .object({
           courseId: z.string().optional(),
-          filter: z.string().optional()
+          filter: z
+            .object({
+              level: z.number().optional(),
+              content: z.string().optional()
+            })
+            .optional()
         })
         .optional()
     )
@@ -152,14 +175,20 @@ export const adminRouter = createTRPCRouter({
       try {
         const questions = await ctx.db.question.findMany({
           where: {
-            OR: [
+            AND: [
               {
-                courseId: input?.courseId || ''
+                courseId: input?.courseId
               },
               {
                 content: {
-                  contains: input?.filter || ''
+                  contains: input?.filter?.content
                 }
+              },
+              {
+                level: input?.filter?.level
+              },
+              {
+                isTemplate: true
               }
             ]
           }
