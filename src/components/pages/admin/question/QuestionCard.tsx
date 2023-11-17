@@ -133,7 +133,6 @@ type QuestionCardProps = {
   question: Questions[number]
 }
 const QuestionCard = ({ question }: QuestionCardProps) => {
-  console.log(question)
   return (
     <div className="rounded-lg border p-4">
       <QuestionCardHeader level={question.level} />

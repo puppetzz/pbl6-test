@@ -15,7 +15,9 @@ import {
   navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu'
 
-const components: { title: string; href: string; description: string }[] = [
+type TComponent = { title: string; href: string; description: string }
+
+const components: TComponent[] = [
   {
     title: 'Alert Dialog',
     href: '/docs/primitives/alert-dialog',

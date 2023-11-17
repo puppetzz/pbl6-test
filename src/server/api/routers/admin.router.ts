@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { pagingDataReturn } from '@/utils'
 import { createId } from '@paralleldrive/cuid2'
+import sortBy from 'lodash/sortBy'
 
 import { z } from 'zod'
 
@@ -34,15 +35,82 @@ export const adminRouter = createTRPCRouter({
         })
 
         await ctx.db.question.createMany({
-          data: questions.map((question) => ({
+          data: questions.map((question, index) => ({
             ...question,
             id: createId(),
             courseId: course.id,
-            isTemplate: false
+            isTemplate: false,
+            templateQuestionId: question.id,
+            index
           }))
         })
 
         return course
+      } catch (error) {
+        throw new Error((error as Error)?.message)
+      }
+    }),
+  updateCourse: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(2),
+        description: z.string(),
+        level: z.number(),
+        type: z.string(),
+        questionIds: z.array(
+          z.object({
+            id: z.string(),
+            templateQuestionId: z.string()
+          })
+        )
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { questionIds, ...rest } = input
+        const questionsToCreate = questionIds.map((q) => {
+          if (!!q.templateQuestionId) {
+            return q.templateQuestionId
+          }
+          return q.id
+        })
+
+        const courseUpdated = await ctx.db.course.update({
+          where: {
+            id: input.id
+          },
+          data: {
+            ...rest
+          }
+        })
+
+        const questions = await ctx.db.question.findMany({
+          where: {
+            id: {
+              in: questionsToCreate
+            }
+          }
+        })
+
+        await ctx.db.question.deleteMany({
+          where: {
+            courseId: input.id
+          }
+        })
+
+        await ctx.db.question.createMany({
+          data: questions.map((question) => ({
+            ...question,
+            id: createId(),
+            courseId: input.id,
+            isTemplate: false,
+            templateQuestionId: question.id,
+            index: questionsToCreate.indexOf(question.id)
+          }))
+        })
+
+        return courseUpdated
       } catch (error) {
         throw new Error((error as Error)?.message)
       }
@@ -96,7 +164,7 @@ export const adminRouter = createTRPCRouter({
           )
           return {
             ...course,
-            questions: courseQuestions
+            questions: sortBy(courseQuestions, ['index'])
           }
         })
 

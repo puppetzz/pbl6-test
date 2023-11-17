@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils'
-import { BookMarked } from 'lucide-react'
+import {
+  BookMarked,
+  LayoutDashboard,
+  PencilRuler,
+  Settings
+} from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -7,7 +12,7 @@ const menuItems = [
   {
     name: 'Dashboard',
     path: '/admin/dashboard',
-    icon: <BookMarked className="h-5 w-5" />
+    icon: <LayoutDashboard className="h-5 w-5" />
   },
   {
     name: 'Courses',
@@ -17,7 +22,7 @@ const menuItems = [
   {
     name: 'Questions',
     path: '/admin/question',
-    icon: <BookMarked className="h-5 w-5" />
+    icon: <PencilRuler className="h-5 w-5" />
   },
   {
     name: 'Orders',
@@ -27,7 +32,7 @@ const menuItems = [
   {
     name: 'Settings',
     path: '/admin/settings',
-    icon: <BookMarked className="h-5 w-5" />
+    icon: <Settings className="h-5 w-5" />
   }
 ]
 
@@ -45,9 +50,9 @@ const AdminSidebar = ({ className }: AdminSidebarProps) => {
           <Link href={item.path} key={item.name}>
             <div
               className={cn(
-                'flex h-12 w-full cursor-pointer items-center justify-start px-4 hover:bg-neutral-100',
+                'flex h-12 w-full cursor-pointer items-center justify-start px-4 hover:bg-card2',
                 {
-                  'bg-neutral-100': router.pathname === item.path
+                  'bg-card2': router.pathname === item.path
                 }
               )}
             >

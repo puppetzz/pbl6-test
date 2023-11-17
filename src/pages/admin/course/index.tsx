@@ -4,8 +4,18 @@ import CourseContainer from '@/components/pages/admin/course/CourseContainer'
 import CreateCourseForm from '@/components/pages/admin/course/CreateCourseForm'
 import { type TPagingCourse } from '@/types/client.type'
 import { api } from '@/utils/api'
-import { useState, type ReactElement } from 'react'
+import { useState, type ReactElement, createContext, useCallback } from 'react'
 import { Waypoint } from 'react-waypoint'
+
+export type TCoursePageContext = {
+  refetch: () => void
+}
+
+export const CoursePageContext = createContext<TCoursePageContext>({
+  refetch: () => {
+    return
+  }
+})
 
 const Course = () => {
   const [page, setPage] = useState(1)
@@ -28,27 +38,39 @@ const Course = () => {
     }
   }
 
+  const refetch = useCallback(() => {
+    setCourses(undefined)
+    mutate({
+      page: 1
+    })
+  }, [])
+
   return (
-    <div className="mx-4">
-      <CoursePageHeader
-        className="mb-2"
-        pageName="Course"
-        description="
-        Build courses and publish to users
-      "
-      />
-      <CreateCourseForm
-        className="mb-2"
-        refetch={() => {
-          setCourses(undefined)
-          mutate({
-            page: 1
-          })
-        }}
-      />
-      <CourseContainer courses={courses?.items || []} loadingStatus={status} />
-      <Waypoint onEnter={handleOnEnter} />
-    </div>
+    <CoursePageContext.Provider value={{ refetch }}>
+      <div className="mx-4">
+        <CoursePageHeader
+          className="mb-2"
+          pageName="Course"
+          description="
+          Build courses and publish to users
+        "
+        />
+        <CreateCourseForm
+          className="mb-2"
+          refetch={() => {
+            setCourses(undefined)
+            mutate({
+              page: 1
+            })
+          }}
+        />
+        <CourseContainer
+          courses={courses?.items || []}
+          loadingStatus={status}
+        />
+        <Waypoint onEnter={handleOnEnter} />
+      </div>
+    </CoursePageContext.Provider>
   )
 }
 

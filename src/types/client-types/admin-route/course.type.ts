@@ -6,3 +6,4 @@ type RouterInput = inferRouterInputs<AppRouter>
 
 export type TPagingCourse = RouterOutput['admin']['getPagingCourses']
 export type TCreateCourseInput = RouterInput['admin']['createCourse']
+export type TUpdateCourseInput = RouterInput['admin']['updateCourse']

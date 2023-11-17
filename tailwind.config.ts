@@ -55,6 +55,10 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
+        card2: {
+          DEFAULT: 'hsl(var(--card2))',
+          foreground: 'hsl(var(--card2-foreground))'
+        },
         beginner: {
           DEFAULT: 'hsl(var(--beginner))',
           foreground: 'hsl(var(--beginner-foreground))'
@@ -91,12 +95,23 @@ module.exports = {
             transform: 'translateX(-50%)',
             'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
           }
+        },
+        'bounce-to-left': {
+          '0%, 100%': {
+            transform: 'translateX(0)',
+            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+          },
+          '50%': {
+            transform: 'translateX(-50%)',
+            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+          }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'bounce-to-right': 'bounce-to-right infinite 0.75s ease-in-out'
+        'bounce-to-right': 'bounce-to-right infinite 0.75s ease-in-out',
+        'bounce-to-left': 'bounce-to-left infinite 0.75s ease-in-out'
       }
     }
   },

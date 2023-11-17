@@ -3,9 +3,14 @@ import { cn } from '@/lib/utils'
 type StatusAlertProps = {
   className?: string
   status: 'draft' | 'published'
+  customStatusMessage?: string
 }
 
-const StatusAlert = ({ status, className }: StatusAlertProps) => {
+const StatusAlert = ({
+  status,
+  className,
+  customStatusMessage
+}: StatusAlertProps) => {
   return (
     <div className={cn('flex items-center gap-1', className)}>
       <span
@@ -14,7 +19,9 @@ const StatusAlert = ({ status, className }: StatusAlertProps) => {
           'bg-success': status === 'published'
         })}
       ></span>
-      <span className="text-sm capitalize">{status}</span>
+      <span className="text-sm capitalize">
+        {customStatusMessage || status}
+      </span>
     </div>
   )
 }

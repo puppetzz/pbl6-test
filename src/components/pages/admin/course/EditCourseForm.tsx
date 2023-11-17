@@ -1,3 +1,4 @@
+import StatusAlert from '@/components/common/StatusAlert'
 import { SortableList } from '@/components/dnd-kit/SortableList'
 import {
   Accordion,
@@ -25,19 +26,21 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { type Questions, type TCreateCourseInput } from '@/types'
+import { CoursePageContext } from '@/pages/admin/course'
+import { type Questions, type TUpdateCourseInput } from '@/types'
 import { levelTransformerToNumber } from '@/utils'
 import { api } from '@/utils/api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronsLeft, ChevronsRight, Plus, X } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronsLeft, ChevronsRight, X } from 'lucide-react'
+import {
+  useContext,
+  useState,
+  type PropsWithChildren,
+  useMemo,
+  useEffect
+} from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
-type CreateCourseFormProps = {
-  className?: string
-  refetch?: () => void
-}
 
 const formSchema = z.object({
   name: z.string(),
@@ -46,8 +49,23 @@ const formSchema = z.object({
   type: z.string()
 })
 
-const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
+type EditCourseFormProps = {
+  className?: string
+  courseId: string
+  defaultValues?: z.infer<typeof formSchema>
+  defaultQuestions: Questions
+}
+
+const EditCourseForm = ({
+  children,
+  className,
+  courseId,
+  defaultValues,
+  defaultQuestions
+}: PropsWithChildren<EditCourseFormProps>) => {
+  const { refetch } = useContext(CoursePageContext)
   const form = useForm<z.infer<typeof formSchema>>({
+    defaultValues,
     resolver: zodResolver(formSchema)
   })
 
@@ -56,7 +74,7 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
     mutate: getQuestions,
     status
   } = api.admin.getQuestions.useMutation()
-  const { mutate: createCourse } = api.admin.createCourse.useMutation({
+  const { mutate: updateCourse } = api.admin.updateCourse.useMutation({
     onSuccess: () => {
       setIsOpen(false)
       setPickedQuestions([])
@@ -66,15 +84,21 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
   })
 
   const [isOpen, setIsOpen] = useState(false)
-  const [pickedQuestions, setPickedQuestions] = useState<Questions>([])
+  const [pickedQuestions, setPickedQuestions] =
+    useState<Questions>(defaultQuestions)
 
   const handleOnSubmit = (values: z.infer<typeof formSchema>) => {
-    const newCourse: TCreateCourseInput = {
+    const newCourse: TUpdateCourseInput = {
       ...values,
+      id: courseId,
       level: levelTransformerToNumber(values.level),
-      questionIds: pickedQuestions.map((item) => item.id)
+      questionIds: pickedQuestions.map((item) => ({
+        id: item.id || '',
+        templateQuestionId: item.templateQuestionId || ''
+      }))
     }
-    createCourse(newCourse)
+    updateCourse(newCourse)
+    setIsOpen(false)
   }
 
   const renderQuestions = () => {
@@ -89,9 +113,12 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
     if (status === 'success') {
       return !!data.length ? (
         data?.map((question) => {
-          const isPicked = pickedQuestions.find(
-            (item) => item.id === question.id
-          )
+          const isPicked = pickedQuestions
+            .map((q) => {
+              return q.templateQuestionId || q.id
+            })
+            .includes(question.id)
+
           return (
             <div
               key={question.id}
@@ -103,12 +130,15 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
               )}
               onClick={() => {
                 if (isPicked) {
-                  setPickedQuestions((prev) =>
-                    prev.filter((item) => item.id !== question.id)
-                  )
-                  return
+                  return setPickedQuestions((prev) => {
+                    return prev.filter((item) => {
+                      if (!!item.templateQuestionId) {
+                        return item.templateQuestionId !== question.id
+                      }
+                      return item.id !== question.id
+                    })
+                  })
                 }
-
                 setPickedQuestions((prev) => {
                   if (prev.find((item) => item.id === question.id)) {
                     return prev
@@ -132,16 +162,28 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
     }
   }
 
+  const isDirty = useMemo(() => {
+    return (
+      form.formState.isDirty ||
+      pickedQuestions.length !== defaultQuestions.length ||
+      pickedQuestions.some(
+        (item, index) => item.id !== defaultQuestions?.[index]?.id
+      )
+    )
+  }, [pickedQuestions, defaultQuestions, form.formState.isDirty])
+
+  useEffect(() => {
+    getQuestions({
+      filter: {
+        level: levelTransformerToNumber(form.getValues('level'))
+      }
+    })
+  }, [])
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className={className} asChild>
-        <Button
-          className="mt-2 flex w-fit cursor-pointer items-center rounded-md border-2 border-accent-foreground p-2 transition-all hover:border-success hover:bg-transparent hover:text-success"
-          variant="outline"
-        >
-          <Plus />
-          <span>Add course</span>
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="h-[70rem] max-h-[90vh] max-w-[70vw]">
         <div className="flex h-full gap-4">
@@ -197,7 +239,7 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Course content</FormLabel>
+                      <FormLabel>Question content</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -253,9 +295,26 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-                <Button type="submit" className="mt-auto">
-                  Submit
-                </Button>
+                <div className="mt-auto grid grid-cols-2 gap-x-2 gap-y-1">
+                  {isDirty && (
+                    <StatusAlert
+                      status="draft"
+                      className="col-span-2 ml-auto"
+                      customStatusMessage="Editing"
+                    />
+                  )}
+                  <Button
+                    variant="secondary"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setPickedQuestions(defaultQuestions)
+                      form.reset()
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button type="submit">Submit</Button>
+                </div>
               </form>
             </Form>
           </div>
@@ -294,4 +353,4 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
   )
 }
 
-export default CreateCourseForm
+export default EditCourseForm

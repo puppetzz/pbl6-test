@@ -8,6 +8,8 @@ import { api } from '@/utils/api'
 import { getLevelLabel } from '@/utils/renderLabel.util'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import EditCourseForm from './EditCourseForm'
+import { levelTransformerToString } from '@/utils'
 
 type CourseCardProps = {
   className?: string
@@ -32,7 +34,7 @@ export const CourseCard = ({ course, className }: CourseCardProps) => {
   return (
     <div
       className={cn(
-        'flex overflow-hidden rounded-lg bg-neutral-50 shadow-md',
+        'flex overflow-hidden rounded-lg bg-card2 shadow-md',
         className
       )}
     >
@@ -66,16 +68,16 @@ export const CourseCard = ({ course, className }: CourseCardProps) => {
       <div className="flex grow flex-col justify-between p-5">
         <div className="flex justify-between">
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-widest text-black/60">
+            <span className="text-xs uppercase tracking-widest text-foreground/60">
               chapter 1
             </span>
             <h1 className="text-2xl">{course.name}</h1>
-            <p className="line-clamp-2 h-12 text-black/70">
+            <p className="line-clamp-2 h-12 text-foreground/70">
               {course.description}
             </p>
           </div>
           <div className="flex basis-[30%] flex-col gap-1">
-            <Progress value={60} className="h-2 w-full bg-black/5" />
+            <Progress value={60} className="h-2 w-full bg-foreground/5" />
             <span className="ml-auto text-[0.7rem]">6/10 steps</span>
           </div>
         </div>
@@ -89,7 +91,18 @@ export const CourseCard = ({ course, className }: CourseCardProps) => {
             />
           )}
           <div className="grid grid-cols-2 gap-1">
-            <Button className="rounded-full">Edit course</Button>
+            <EditCourseForm
+              courseId={course.id}
+              defaultValues={{
+                name: course.name,
+                description: course.description,
+                level: levelTransformerToString(course.level),
+                type: course.type
+              }}
+              defaultQuestions={course.questions}
+            >
+              <Button className="rounded-full">Edit course</Button>
+            </EditCourseForm>
             {isPublished ? (
               <Button
                 className="rounded-full"
