@@ -4,21 +4,15 @@ import { type AppProps } from 'next/app'
 
 import { api } from '@/utils/api'
 
-import '@/styles/globals.css'
 import TopBar from '@/components/TopBar'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { Toaster } from '@/components/ui/toaster'
-import 'regenerator-runtime/runtime'
-import {
-  Suspense,
-  type ReactElement,
-  type ReactNode,
-  useState,
-  useEffect
-} from 'react'
-import { type NextPage } from 'next/types'
-import { Raleway } from 'next/font/google'
+import '@/styles/globals.css'
 import { useTheme } from 'next-themes'
+import { Raleway } from 'next/font/google'
+import { type NextPage } from 'next/types'
+import { Suspense, useEffect, type ReactElement, type ReactNode } from 'react'
+import 'regenerator-runtime/runtime'
 
 const raleway = Raleway({ subsets: ['latin'] })
 
@@ -52,7 +46,7 @@ const MyApp = ({
       <SessionProvider session={session}>
         <Suspense fallback="loading...">
           <div className={`flex min-h-screen flex-col ${raleway.className}`}>
-            <TopBar className="sticky inset-x-0 top-0 shrink-0" />
+            <TopBar className="sticky inset-x-0 top-0 z-10 shrink-0" />
             <div className="shrink grow">
               {getLayout(<Component {...pageProps} />)}
             </div>

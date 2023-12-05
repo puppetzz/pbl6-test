@@ -1,9 +1,24 @@
+import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 
-export const Loading = () => {
+type LoadingProps = {
+  className?: string
+  classes?: {
+    wrapper?: string
+    loader?: string
+  }
+}
+
+export const Loading = ({
+  className,
+  classes: { loader, wrapper } = {
+    loader: '',
+    wrapper: ''
+  }
+}: LoadingProps) => {
   return (
-    <div>
-      <Loader2 className="animate-spin" />
+    <div className={cn(className, wrapper)}>
+      <Loader2 className={cn('animate-spin', loader)} />
     </div>
   )
 }

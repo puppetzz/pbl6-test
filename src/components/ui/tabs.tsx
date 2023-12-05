@@ -4,6 +4,28 @@ import * as React from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 
 import { cn } from '@/lib/utils'
+import { type VariantProps, cva } from 'class-variance-authority'
+
+const tabVariants = cva(
+  'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: {
+      variant: {
+        default:
+          'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
+        underline:
+          'relative after:absolute after:inset-x-0 after:bottom-0 after:z-[1] after:hidden after:h-[2px] after:bg-primary hover:text-primary hover:after:block hover:after:bg-primary data-[state=active]:text-black data-[state=active]:after:block'
+      }
+    },
+    defaultVariants: {
+      variant: 'default'
+    }
+  }
+)
+
+export interface TabProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
+    VariantProps<typeof tabVariants> {}
 
 const Tabs = TabsPrimitive.Root
 
@@ -14,7 +36,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
+      'relative inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground after:absolute after:bottom-0.5 after:inset-x-0 after:h-[2px] after:bg-border',
       className
     )}
     {...props}
@@ -24,14 +46,11 @@ TabsList.displayName = TabsPrimitive.List.displayName
 
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+  TabProps
+>(({ className, variant, ...props }, ref) => (
   <TabsPrimitive.Trigger
     ref={ref}
-    className={cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
-      className
-    )}
+    className={cn(tabVariants({ variant, className }))}
     {...props}
   />
 ))

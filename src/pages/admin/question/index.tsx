@@ -13,7 +13,7 @@ const QuestionPage = () => {
   }, [])
 
   return (
-    <div className="mx-4">
+    <div className="mx-4 space-y-2">
       <QuestionPageHeader
         pageName="Question"
         description="Create question templates to be used in courses"

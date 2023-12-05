@@ -1,4 +1,4 @@
-import { LogOut, User, Wrench } from 'lucide-react'
+import { Library, LogOut, User, Wrench } from 'lucide-react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import type * as z from 'zod'
@@ -137,6 +137,21 @@ export const UserBox = ({ className = '' }: UserBoxProps) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>My Studying</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="cursor-pointer" asChild>
+                <Link
+                  href={`/profile/${userSession.user.id}/sets`}
+                  className="w-full"
+                >
+                  <Library className="mr-2 h-4 w-4" />
+                  <span>Study sets</span>
+                  <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuLabel>Account setting</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -186,8 +201,12 @@ export const UserBox = ({ className = '' }: UserBoxProps) => {
                   Can't wait to see you!!
                 </DialogHeader>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="signin">Sign In</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                  <TabsTrigger variant="underline" value="signin">
+                    Sign In
+                  </TabsTrigger>
+                  <TabsTrigger variant="underline" value="signup">
+                    Sign Up
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="signin">
                   <Form {...signInForm}>

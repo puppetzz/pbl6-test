@@ -52,18 +52,19 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     firstName     String?
     lastName      String?
-    username      String?   @unique
+    username      String?    @unique
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
-    isAdmin       Boolean   @default(false)
+    isAdmin       Boolean    @default(false)
     accounts      Account[]
     sessions      Session[]
     courses       Course[]
+    StudySet      StudySet[]
 }
 
 model VerificationToken {
@@ -88,14 +89,46 @@ model Course {
 }
 
 model Question {
-    id                 String  @id @default(cuid())
+    id                 String   @id @default(cuid())
     templateQuestionId String?
     level              Int
     content            String
     score              Float
     audioURL           String?
-    isTemplate         Boolean @default(false)
-    Course             Course? @relation(fields: [courseId], references: [id])
+    isTemplate         Boolean  @default(false)
+    Course             Course?  @relation(fields: [courseId], references: [id])
     courseId           String?
     index              Int?
+    type               String   @default("singleChoice")
+    Answer             Answer[]
+}
+
+model Answer {
+    id         String   @id @default(cuid())
+    content    String
+    isCorrect  Boolean
+    Question   Question @relation(fields: [questionId], references: [id])
+    questionId String
+    index      Int?
+}
+
+model StudySet {
+    id          String      @id @default(cuid())
+    title       String
+    description String
+    isPublic    Boolean     @default(false)
+    createdAt   DateTime    @default(now())
+    User        User        @relation(fields: [userId], references: [id])
+    userId      String
+    StudyCard   StudyCard[]
+}
+
+model StudyCard {
+    id         String   @id @default(cuid())
+    term       String
+    definition String
+    imageURL   String?
+    index      Int?
+    StudySet   StudySet @relation(fields: [studySetId], references: [id])
+    studySetId String
 }

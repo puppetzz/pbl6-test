@@ -31,7 +31,8 @@ type CreateQuestionFormProps = {
 const formSchema = z.object({
   level: z.string(),
   content: z.string().nonempty('Content is required'),
-  audioURL: z.string().optional()
+  audioURL: z.string().optional(),
+  type: z.string()
 })
 
 const CreateQuestionForm = ({
@@ -112,6 +113,35 @@ const CreateQuestionForm = ({
                     </Select>
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="type"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Question type</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="outline-none">
+                          <SelectValue placeholder="Pick a type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="singleChoice">
+                          Single choice
+                        </SelectItem>
+                        <SelectItem value="multipleChoice">
+                          Multiple choice
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                 </FormItem>
               )}
             />

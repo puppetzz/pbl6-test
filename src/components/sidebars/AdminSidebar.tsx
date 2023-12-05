@@ -15,7 +15,7 @@ const menuItems = [
     icon: <LayoutDashboard className="h-5 w-5" />
   },
   {
-    name: 'Courses',
+    name: 'Lessons',
     path: '/admin/course',
     icon: <BookMarked className="h-5 w-5" />
   },
@@ -50,7 +50,7 @@ const AdminSidebar = ({ className }: AdminSidebarProps) => {
           <Link href={item.path} key={item.name}>
             <div
               className={cn(
-                'flex h-12 w-full cursor-pointer items-center justify-start px-4 hover:bg-card2',
+                'flex h-12 w-full cursor-pointer items-center justify-start p-8 hover:bg-card2',
                 {
                   'bg-card2': router.pathname === item.path
                 }
@@ -59,7 +59,7 @@ const AdminSidebar = ({ className }: AdminSidebarProps) => {
               <div className="mr-4 flex h-8 w-8 items-center justify-center">
                 {item.icon}
               </div>
-              <div className="text-sm font-medium text-gray-500">
+              <div className="text-lg font-medium text-gray-500">
                 {item.name}
               </div>
             </div>

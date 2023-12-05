@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils'
-import { type Course } from '@prisma/client'
+import { type TPagingCourse } from '@/types/client.type'
 import { Inbox } from 'lucide-react'
 import { CourseCard } from './CourseCard'
-import { type TPagingCourse } from '@/types/client.type'
+import { Loading } from '@/components/common/Loading'
+import { cn } from '@/lib/utils'
 
 type CourseContainerProps = {
   className?: string
@@ -15,25 +15,21 @@ const CourseContainer = ({
   courses,
   loadingStatus
 }: CourseContainerProps) => {
-  if (
-    !courses.length &&
-    (loadingStatus === 'idle' || loadingStatus === 'loading')
-  ) {
-    return <div className="text-center">loading...</div>
-  }
-
-  if (!courses?.length) {
+  if (!courses?.length && loadingStatus === 'success') {
     return (
       <div className="flex flex-col items-center">
         <Inbox className="text-muted-foreground" width={48} height={48} />
-        <span className="text-muted-foreground">No course found</span>
+        <span className="text-muted-foreground">No lesson found</span>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-2 lg:grid-cols-2">
+    <div className={cn('grid gap-2 lg:grid-cols-2', className)}>
       {courses?.map((course) => <CourseCard key={course.id} course={course} />)}
+      {(loadingStatus === 'idle' || loadingStatus === 'loading') && (
+        <Loading className="col-span-2 flex justify-center p-4" />
+      )}
     </div>
   )
 }

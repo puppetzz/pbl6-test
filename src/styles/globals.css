@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 228 38% 97%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -20,7 +20,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 234 100% 63%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -113,8 +113,8 @@
   .top-bar-height {
     height: var(--top-bar-height);
   }
-  .full-height-minus-top-bar {
-    height: calc(100vh - var(--top-bar-height));
+  .min-full-height-minus-top-bar {
+    min-height: calc(100vh - var(--top-bar-height));
   }
 
   .divider-vertical {
@@ -123,5 +123,14 @@
 
   .divider-horizontal {
     @apply h-px w-full bg-black;
+  }
+
+  .content-divider-horizontal {
+    @apply relative h-fit w-full flex justify-center;
+    @apply after:absolute after:inset-x-0 after:top-1/2 after:-translate-y-1/2 after:h-[2px] after:bg-border;
+  }
+
+  .after-bottom {
+    @apply relative after:absolute after:bottom-0 after:inset-x-0 after:h-px after:bg-black after:transition-all after:duration-300;
   }
 }

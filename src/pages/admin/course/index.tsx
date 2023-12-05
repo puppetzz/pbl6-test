@@ -1,3 +1,4 @@
+import { Loading } from '@/components/common/Loading'
 import AdminLayout from '@/components/layouts/AdminLayout'
 import { PageHeader as CoursePageHeader } from '@/components/pages/admin/common/PageHeader'
 import CourseContainer from '@/components/pages/admin/course/CourseContainer'
@@ -50,9 +51,9 @@ const Course = () => {
       <div className="mx-4">
         <CoursePageHeader
           className="mb-2"
-          pageName="Course"
+          pageName="Lessons"
           description="
-          Build courses and publish to users
+          Build lessons and publish to users
         "
         />
         <CreateCourseForm
@@ -68,7 +69,9 @@ const Course = () => {
           courses={courses?.items || []}
           loadingStatus={status}
         />
-        <Waypoint onEnter={handleOnEnter} />
+        <div className="mt-4">
+          <Waypoint onEnter={handleOnEnter} />
+        </div>
       </div>
     </CoursePageContext.Provider>
   )

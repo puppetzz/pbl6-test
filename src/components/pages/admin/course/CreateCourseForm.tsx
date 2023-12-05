@@ -140,12 +140,12 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
           variant="outline"
         >
           <Plus />
-          <span>Add course</span>
+          <span>Add lesson</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="h-[70rem] max-h-[90vh] max-w-[70vw]">
-        <div className="flex h-full gap-4">
-          <div className="flex h-full basis-2/5 flex-col overflow-hidden">
+        <div className="flex h-full gap-4 overflow-hidden">
+          <div className="flex h-full basis-2/5 flex-col overflow-y-auto">
             <span className="w-full text-center text-2xl font-bold">
               Properties
             </span>
@@ -248,7 +248,7 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
                     <AccordionTrigger className="hover:no-underline">
                       Pick questions
                     </AccordionTrigger>
-                    <AccordionContent className="max-h-[20rem] overflow-auto shadow-lg">
+                    <AccordionContent className="max-h-[20%] overflow-auto shadow-lg">
                       {renderQuestions()}
                     </AccordionContent>
                   </AccordionItem>
@@ -260,7 +260,7 @@ const CreateCourseForm = ({ className, refetch }: CreateCourseFormProps) => {
             </Form>
           </div>
           <span className="divider-vertical" />
-          <div className="basis-3/5">
+          <div className="basis-3/5 overflow-y-auto">
             <SortableList
               items={pickedQuestions}
               onChange={setPickedQuestions}

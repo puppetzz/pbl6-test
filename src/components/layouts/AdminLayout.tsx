@@ -14,8 +14,8 @@ const AdminLayout = ({ children }: PropsWithChildren) => {
   })
 
   return userSession?.user.isAdmin ? (
-    <div className="full-height-minus-top-bar flex">
-      <AdminSidebar className="basis-[250px]" />
+    <div className="min-full-height-minus-top-bar flex">
+      <AdminSidebar className="basis-[350px]" />
       <Separator orientation="vertical" />
       <div className="grow">{children}</div>
     </div>
