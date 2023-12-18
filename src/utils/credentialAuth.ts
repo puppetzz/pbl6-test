@@ -2,7 +2,7 @@
 import { type OAuthUserConfig } from 'next-auth/providers'
 import { api } from './api'
 
-export const credentialsProviderOptions: OAuthUserConfig<any> = {
+export const credentialsProviderOptions = {
   // The name to display on the sign in form (e.g. "Sign in with...")
   name: 'Credentials',
   // `credentials` is used to generate a form on the sign in page.
@@ -13,7 +13,7 @@ export const credentialsProviderOptions: OAuthUserConfig<any> = {
     username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
     password: { label: 'Password', type: 'password' }
   },
-  authorize(_, req) {
+  authorize(_: any, req: any) {
     // Add logic here to look up the user from the credentials supplied
 
     const { data: user } = api.auth.manualSignIn.useQuery({
