@@ -8,8 +8,9 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - node/install-packages
-      - run: npm run build
+      - node/install-packages:
+          pkg-manager: yarn
+      - run: yarn run build
 
 workflows:
   build:
