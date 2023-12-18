@@ -31,9 +31,9 @@ workflows:
   build:
     jobs:
       - build-app
-      - build-and-push:
-          requires:
-            - build-app
-          filters:
-            branches:
-              only: main
+      # - build-and-push:
+      #     requires:
+      #       - build-app
+      #     filters:
+      #       branches:
+      #         only: main
