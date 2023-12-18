@@ -15,7 +15,7 @@ jobs:
 
   build-and-push:
     environment:
-      DOCKER_IMAGE: pbl6/test
+      DOCKER_IMAGE: pbl6/anna
       DOCKER_TAG: latest
     executor: docker/docker
     steps:
