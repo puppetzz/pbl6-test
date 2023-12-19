@@ -34,6 +34,12 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+
+  test: 
+    executor: node/default
+    steps:
+      - run: echo {$SSH_USER} && echo {$SSH_HOST}
+
   deploy:
     executor: docker/docker
     steps:
@@ -45,16 +51,17 @@ jobs:
 workflows:
   my-pipeline:
     jobs:
-      - build-app
-      - build-and-push:
-          requires:
-            - build-app
-          filters:
-            branches:
-              only: main
-      - deploy:
-          requires:
-            - build-and-push
-          filters:
-            branches:
-              only: main
+      # - build-app
+      # - build-and-push:
+      #     requires:
+      #       - build-app
+      #     filters:
+      #       branches:
+      #         only: main
+      # - deploy:
+      #     requires:
+      #       - build-and-push
+      #     filters:
+      #       branches:
+      #         only: main
+      - test
