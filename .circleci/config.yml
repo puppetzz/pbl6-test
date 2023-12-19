@@ -35,10 +35,15 @@ jobs:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
 
-  test: 
-    executor: node/default
+  build:
+    docker:
+      - image: cimg/base:2023.06
     steps:
-      - run: echo $SSH_USER && echo $SSH_HOST
+      - checkout
+      - run:
+          name: "echo an env var that is part of our project"
+          command: |
+            echo $SSH_USER
 
   deploy:
     executor: docker/docker
@@ -64,4 +69,4 @@ workflows:
       #     filters:
       #       branches:
       #         only: main
-      - test
+      - build
