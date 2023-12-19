@@ -40,7 +40,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "11:0e:6f:cf:4d:23:fb:f3:fb:7a:34:d3:72:c7:31:e5"
-      - run: ssh -oStrictHostKeyChecking=no -v "./deploy.sh"
+      - run: ssh -oStrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "./deploy.sh"
 
 workflows:
   my-pipeline:
