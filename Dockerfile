@@ -3,4 +3,5 @@ WORKDIR /app
 ADD package*.json ./
 RUN yarn install
 ADD . .
-CMD ["yarn", "start"]
+CMD ["sh", "-c", "yarn build && yarn start"]
+
