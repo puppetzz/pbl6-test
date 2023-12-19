@@ -35,38 +35,27 @@ jobs:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
 
-  build:
-    docker:
-      - image: cimg/base:2023.06
-    steps:
-      - checkout
-      - run:
-          name: "echo an env var that is part of our project"
-          command: |
-            echo $SSH_USER
-
   deploy:
     executor: docker/docker
     steps:
       - add_ssh_keys:
           fingerprints:
             - "11:0e:6f:cf:4d:23:fb:f3:fb:7a:34:d3:72:c7:31:e5"
-      - run: ssh -oStrictHostKeyChecking=no $SSH_USER@$SSH_HOST "./deploy.sh"
+      - run: ssh -oStrictHostKeyChecking=no root@159.65.138.198 "./deploy.sh"
 
 workflows:
   my-pipeline:
     jobs:
-      # - build-app
-      # - build-and-push:
-      #     requires:
-      #       - build-app
-      #     filters:
-      #       branches:
-      #         only: main
-      # - deploy:
-      #     requires:
-      #       - build-and-push
-      #     filters:
-      #       branches:
-      #         only: main
-      - build
+      - build-app
+      - build-and-push:
+          requires:
+            - build-app
+          filters:
+            branches:
+              only: main
+      - deploy:
+          requires:
+            - build-and-push
+          filters:
+            branches:
+              only: main
