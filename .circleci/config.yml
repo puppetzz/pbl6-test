@@ -36,9 +36,6 @@ jobs:
             echo "Digest is: $(</tmp/digest.txt)"
 
   test: 
-    environment:
-      SSH_USER: $SSH_USER
-      SSH_HOST: $SSH_HOST
     executor: node/default
     steps:
       - run: echo {$SSH_USER} && echo {$SSH_HOST}
