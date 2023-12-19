@@ -37,8 +37,11 @@ jobs:
 
   test: 
     executor: node/default
+    environment:
+      SSH_USER: $SSH_USER
+      SSH_HOST: $SSH_HOST
     steps:
-      - run: echo {$SSH_USER} && echo {$SSH_HOST}
+      - run: echo {SSH_USER} && echo {SSH_HOST}
 
   deploy:
     executor: docker/docker
